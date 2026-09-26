@@ -7,5 +7,8 @@ APP_ENV = "production"
 SUPABASE_URL = "https://bhbhbbachvzdwahdiirj.supabase.co"
 TALLY_FORM_ID = "zxlAbR"
 
+[secrets]
+required = [ "SUPABASE_SECRET_KEY", "TALLY_WEBHOOK_SECRET" ]
+
 [observability]
 enabled = true
