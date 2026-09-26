@@ -1,13 +1,21 @@
 {
   "checkpoint": "BOS-CP01-A",
   "version": "0.1.0",
-  "status": "IN_PROGRESS",
+  "status": "IMPLEMENTED_NOT_FROZEN",
   "claims": {
     "repository_initialized": true,
     "data_contract_committed": true,
     "database_tables_present": true,
     "database_rls_enabled": true,
+    "foreign_key_indexes_present": true,
+    "atomic_ingest_rpc_deployed": true,
+    "atomic_ingest_rpc_rollback_tested": true,
+    "idempotency_replay_tested": true,
+    "rpc_anon_execute": false,
+    "rpc_authenticated_execute": false,
+    "rpc_service_role_execute": true,
     "tally_form_published": true,
+    "gateway_webhook_implemented": true,
     "worker_public_health_verified": false,
     "ci_verified": false
   },
@@ -31,7 +39,8 @@
     "No production or revenue claim.",
     "RLS enabled on all six public CP01 tables.",
     "No anon/authenticated RLS policies are intentionally defined for CP01-A.",
-    "Three foreign-key indexes were added after Supabase advisor review.",
-    "Public Worker deployment and CI verification remain open."
+    "Atomic ingest RPC is restricted to service_role.",
+    "Synthetic transaction and idempotency verification were executed inside a transaction and rolled back; no synthetic contact or idempotency row remains.",
+    "Public Cloudflare Worker deployment, public health proof, Tally webhook registration and CI verification remain open."
   ]
 }
