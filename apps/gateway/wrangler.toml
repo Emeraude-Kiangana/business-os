@@ -1,0 +1,6 @@
+name = "business-os-gateway"
+main = "src/index.js"
+compatibility_date = "2026-09-26"
+
+[observability]
+enabled = true
