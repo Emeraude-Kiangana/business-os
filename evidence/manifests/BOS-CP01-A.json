@@ -19,6 +19,7 @@
     "gateway_test_suite_passed": true,
     "github_ci_verified": true,
     "cloudflare_deploy_workflow_prepared": true,
+    "supabase_modern_secret_key_contract": true,
     "worker_public_health_verified": false,
     "tally_webhook_registered": false,
     "real_tally_to_database_e2e_verified": false
@@ -34,7 +35,7 @@
       "tests": 6,
       "passed": 6,
       "failed": 0,
-      "note": "Supplementary compatibility check only; canonical CI used repository Node 24 configuration."
+      "note": "Supplementary compatibility check only; canonical CI uses repository Node 24 configuration."
     }
   },
   "tally": {
@@ -44,6 +45,7 @@
   "supabase": {
     "project_ref": "bhbhbbachvzdwahdiirj",
     "status_observed": "ACTIVE_HEALTHY",
+    "backend_key_contract": "SUPABASE_SECRET_KEY",
     "tables": [
       "contacts",
       "leads",
@@ -60,7 +62,7 @@
     "required_github_secrets": [
       "CLOUDFLARE_API_TOKEN",
       "CLOUDFLARE_ACCOUNT_ID",
-      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_SECRET_KEY",
       "TALLY_WEBHOOK_SECRET"
     ],
     "committed_non_secret_vars": {
@@ -73,7 +75,7 @@
     "No production or revenue claim.",
     "RLS is enabled on all six public CP01 tables.",
     "No anon/authenticated RLS policies are intentionally defined for CP01.",
-    "Atomic ingest RPC is restricted to service_role.",
+    "Atomic ingest RPC execution remains restricted to the PostgreSQL service_role; the Worker authenticates using the current Supabase secret-key model.",
     "Synthetic transaction and idempotency verification were executed inside a transaction and rolled back; no synthetic customer record remains.",
     "GitHub CI run 36266820439 completed successfully after correcting async health tests.",
     "Public Cloudflare Worker deployment, public health proof, Tally webhook registration and real Tally-to-database E2E remain open."
