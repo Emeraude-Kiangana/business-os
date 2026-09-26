@@ -16,17 +16,8 @@ async function sign(body, secret) {
   return Buffer.from(bytes).toString("base64");
 }
 
-test("Tally HMAC signature verifies", async () => {
-  const raw = JSON.stringify({ eventId: "evt_test" });
-  const secret = "test-secret";
-  const signature = await sign(raw, secret);
-
-  assert.equal(await verifyTallySignature(raw, signature, secret), true);
-  assert.equal(await verifyTallySignature(raw, signature, "wrong-secret"), false);
-});
-
-test("Tally payload normalizes to canonical lead contract", () => {
-  const payload = {
+function basePayload(overrides = {}) {
+  return {
     eventId: "evt_test_001",
     eventType: "FORM_RESPONSE",
     data: {
@@ -52,12 +43,27 @@ test("Tally payload normalizes to canonical lead contract", () => {
           value: ["opt_yes"],
           options: [{ id: "opt_yes", text: "J’accepte" }]
         },
-        { label: "source", value: "ci-test" }
-      ]
+        { label: "source", value: "portfolio" },
+        { label: "utm_source", value: "x" },
+        { label: "utm_medium", value: "social" },
+        { label: "utm_campaign", value: "launch" }
+      ],
+      ...overrides
     }
   };
+}
 
-  assert.deepEqual(normalizeTallyPayload(payload), {
+test("Tally HMAC signature verifies", async () => {
+  const raw = JSON.stringify({ eventId: "evt_test" });
+  const secret = "test-secret";
+  const signature = await sign(raw, secret);
+
+  assert.equal(await verifyTallySignature(raw, signature, secret), true);
+  assert.equal(await verifyTallySignature(raw, signature, "wrong-secret"), false);
+});
+
+test("Tally payload normalizes to canonical lead contract", () => {
+  assert.deepEqual(normalizeTallyPayload(basePayload()), {
     provider: "tally",
     idempotencyKey: "evt_test_001",
     requestId: "evt_test_001",
@@ -68,7 +74,35 @@ test("Tally payload normalizes to canonical lead contract", () => {
     problemSummary: "Connect two test APIs.",
     budgetRange: "À définir",
     deadline: null,
-    source: "ci-test",
-    consent: true
+    source: "portfolio",
+    consent: true,
+    attribution: {
+      utm_source: "x",
+      utm_medium: "social",
+      utm_campaign: "launch"
+    }
   });
+});
+
+test("unknown source is normalized to unknown", () => {
+  const payload = basePayload();
+  payload.data.fields.find((field) => field.label === "source").value = "tampered";
+
+  assert.equal(normalizeTallyPayload(payload).source, "unknown");
+});
+
+test("unknown service is rejected", () => {
+  const payload = basePayload();
+  const service = payload.data.fields.find((field) => field.label === "Service recherché");
+  service.value = "unexpected";
+  service.options = [];
+
+  assert.throws(() => normalizeTallyPayload(payload), /VALIDATION_ERROR/);
+});
+
+test("invalid email is rejected", () => {
+  const payload = basePayload();
+  payload.data.fields.find((field) => field.label === "Email").value = "not-an-email";
+
+  assert.throws(() => normalizeTallyPayload(payload), /VALIDATION_ERROR/);
 });
