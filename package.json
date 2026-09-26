@@ -1,0 +1,13 @@
+{
+  "name": "zero-dollar-business-os",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "test": "node --test apps/gateway/test/*.test.js",
+    "verify": "npm test"
+  }
+}
