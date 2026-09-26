@@ -32,6 +32,9 @@ create table if not exists public.leads (
   )
 );
 
+create index if not exists leads_contact_id_idx
+  on public.leads(contact_id);
+
 create table if not exists public.lead_events (
   id uuid primary key default gen_random_uuid(),
   lead_id uuid references public.leads(id),
@@ -42,6 +45,9 @@ create table if not exists public.lead_events (
   occurred_at timestamptz not null default now()
 );
 
+create index if not exists lead_events_lead_id_idx
+  on public.lead_events(lead_id);
+
 create table if not exists public.consents (
   id uuid primary key default gen_random_uuid(),
   contact_id uuid not null references public.contacts(id),
@@ -50,6 +56,9 @@ create table if not exists public.consents (
   source text not null,
   captured_at timestamptz not null default now()
 );
+
+create index if not exists consents_contact_id_idx
+  on public.consents(contact_id);
 
 create table if not exists public.idempotency_keys (
   id uuid primary key default gen_random_uuid(),
