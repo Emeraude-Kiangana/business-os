@@ -2,5 +2,10 @@ name = "business-os-gateway"
 main = "src/index.js"
 compatibility_date = "2026-09-26"
 
+[vars]
+APP_ENV = "production"
+SUPABASE_URL = "https://bhbhbbachvzdwahdiirj.supabase.co"
+TALLY_FORM_ID = "zxlAbR"
+
 [observability]
 enabled = true
