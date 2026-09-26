@@ -9,8 +9,7 @@ export async function ingestLead(env, lead) {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        apikey: env.SUPABASE_SECRET_KEY,
-        authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`
+        apikey: env.SUPABASE_SECRET_KEY
       },
       body: JSON.stringify({
         p_provider: lead.provider,
@@ -23,14 +22,15 @@ export async function ingestLead(env, lead) {
         p_deadline: lead.deadline,
         p_source: lead.source,
         p_consent: lead.consent,
-        p_request_id: lead.requestId
-      })
+        p_request_id: lead.requestId,
+        p_attribution: lead.attribution
+      }),
+      signal: AbortSignal.timeout(5000)
     }
   );
 
   if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`DATABASE_ERROR:${response.status}:${body.slice(0, 300)}`);
+    throw new Error(`DATABASE_ERROR:${response.status}`);
   }
 
   return response.json();

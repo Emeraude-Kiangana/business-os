@@ -1,4 +1,8 @@
-create or replace function public.ingest_lead(
+drop function if exists public.ingest_lead(
+  text, text, text, text, text, text, text, text, text, boolean, text
+);
+
+create function public.ingest_lead(
   p_provider text,
   p_idempotency_key text,
   p_name text,
@@ -9,7 +13,8 @@ create or replace function public.ingest_lead(
   p_deadline text,
   p_source text,
   p_consent boolean,
-  p_request_id text
+  p_request_id text,
+  p_attribution jsonb
 )
 returns jsonb
 language plpgsql
@@ -155,7 +160,8 @@ begin
     nullif(btrim(coalesce(p_request_id, '')), ''),
     jsonb_build_object(
       'provider', btrim(p_provider),
-      'idempotency_key', btrim(p_idempotency_key)
+      'idempotency_key', btrim(p_idempotency_key),
+      'attribution', coalesce(p_attribution, '{}'::jsonb)
     )
   );
 
@@ -175,9 +181,9 @@ end;
 $$;
 
 revoke execute on function public.ingest_lead(
-  text, text, text, text, text, text, text, text, text, boolean, text
+  text, text, text, text, text, text, text, text, text, boolean, text, jsonb
 ) from public, anon, authenticated;
 
 grant execute on function public.ingest_lead(
-  text, text, text, text, text, text, text, text, text, boolean, text
+  text, text, text, text, text, text, text, text, text, boolean, text, jsonb
 ) to service_role;

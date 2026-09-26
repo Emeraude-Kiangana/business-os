@@ -18,6 +18,15 @@ async function sign(body, secret) {
   return Buffer.from(new Uint8Array(signature)).toString("base64");
 }
 
+function env() {
+  return {
+    TALLY_WEBHOOK_SECRET: "secret",
+    TALLY_FORM_ID: "zxlAbR",
+    SUPABASE_URL: "https://example.supabase.co",
+    SUPABASE_SECRET_KEY: "test-only"
+  };
+}
+
 function validPayload() {
   return {
     eventId: "evt_test_gateway",
@@ -31,29 +40,73 @@ function validPayload() {
         { label: "Quel problème veux-tu résoudre ?", value: "Synthetic integration test." },
         { label: "Budget indicatif", value: "À définir" },
         { label: "Consentement", value: ["yes"] },
-        { label: "source", value: "ci-test" }
+        { label: "source", value: "portfolio" },
+        { label: "utm_source", value: "x" },
+        { label: "utm_medium", value: "social" },
+        { label: "utm_campaign", value: "launch" }
       ]
     }
   };
 }
 
+test("incomplete gateway configuration fails closed", async () => {
+  const response = await handleRequest(
+    new Request("https://gateway.invalid/v1/webhooks/tally", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(validPayload())
+    }),
+    { TALLY_WEBHOOK_SECRET: "secret" }
+  );
+
+  assert.equal(response.status, 500);
+  assert.equal((await response.json()).error.code, "CONFIGURATION_ERROR");
+});
+
+test("non-json webhook is rejected", async () => {
+  const response = await handleRequest(
+    new Request("https://gateway.invalid/v1/webhooks/tally", {
+      method: "POST",
+      headers: { "content-type": "text/plain" },
+      body: "{}"
+    }),
+    env()
+  );
+
+  assert.equal(response.status, 415);
+});
+
+test("oversized webhook is rejected before signature verification", async () => {
+  const response = await handleRequest(
+    new Request("https://gateway.invalid/v1/webhooks/tally", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "content-length": String(70 * 1024)
+      },
+      body: "{}"
+    }),
+    env()
+  );
+
+  assert.equal(response.status, 413);
+});
+
 test("unsigned Tally webhook fails closed", async () => {
   const body = JSON.stringify(validPayload());
-  const request = new Request("https://gateway.invalid/v1/webhooks/tally", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body
-  });
-
-  const response = await handleRequest(request, {
-    TALLY_WEBHOOK_SECRET: "secret",
-    TALLY_FORM_ID: "zxlAbR"
-  });
+  const response = await handleRequest(
+    new Request("https://gateway.invalid/v1/webhooks/tally", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body
+    }),
+    env()
+  );
 
   assert.equal(response.status, 401);
 });
 
-test("valid Tally webhook persists through RPC adapter boundary", async () => {
+test("valid Tally webhook uses apikey-only Supabase secret and persists attribution", async () => {
   const body = JSON.stringify(validPayload());
   const secret = "secret";
   const signature = await sign(body, secret);
@@ -61,9 +114,17 @@ test("valid Tally webhook persists through RPC adapter boundary", async () => {
 
   globalThis.fetch = async (url, init) => {
     assert.match(String(url), /\/rest\/v1\/rpc\/ingest_lead$/);
+    assert.equal(init.headers.apikey, "test-only");
+    assert.equal(init.headers.authorization, undefined);
+
     const rpc = JSON.parse(init.body);
     assert.equal(rpc.p_email, "synthetic@example.com");
     assert.equal(rpc.p_service_code, "SERVICE_GITHUB_SETUP");
+    assert.deepEqual(rpc.p_attribution, {
+      utm_source: "x",
+      utm_medium: "social",
+      utm_campaign: "launch"
+    });
 
     return Response.json({
       ok: true,
@@ -74,23 +135,22 @@ test("valid Tally webhook persists through RPC adapter boundary", async () => {
   };
 
   try {
-    const request = new Request("https://gateway.invalid/v1/webhooks/tally", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "tally-signature": signature
-      },
-      body
-    });
-
-    const response = await handleRequest(request, {
-      TALLY_WEBHOOK_SECRET: secret,
-      TALLY_FORM_ID: "zxlAbR",
-      SUPABASE_URL: "https://example.supabase.co",
-      SUPABASE_SECRET_KEY: "test-only"
-    });
+    const response = await handleRequest(
+      new Request("https://gateway.invalid/v1/webhooks/tally", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "tally-signature": signature
+        },
+        body
+      }),
+      env()
+    );
 
     assert.equal(response.status, 200);
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+
     const payload = await response.json();
     assert.equal(payload.ok, true);
     assert.equal(payload.data.status, "NEW");
