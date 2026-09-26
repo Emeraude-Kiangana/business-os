@@ -25,11 +25,11 @@
     "real_tally_to_database_e2e_verified": false
   },
   "verification": {
-    "github_ci_run_id": 36266820439,
+    "github_ci_run_id": 36267017834,
     "github_ci_conclusion": "success",
-    "github_ci_head_sha": "2137d4baaeb77f7b9b5b60cfcbad57895ff92049",
-    "pr_number": 1,
-    "merge_commit": "e19cdc42c9cad3670a6f903aca105b6ce3ca2529",
+    "github_ci_head_sha": "0bacc042cea366e5477e80b0bad14df608d606b2",
+    "pr_number": 2,
+    "merge_commit": "12b28b40d7c13133987e811bf5808d857f1a2515",
     "local_compatibility_test": {
       "runtime": "Node 22.16.0",
       "tests": 6,
@@ -77,7 +77,7 @@
     "No anon/authenticated RLS policies are intentionally defined for CP01.",
     "Atomic ingest RPC execution remains restricted to the PostgreSQL service_role; the Worker authenticates using the current Supabase secret-key model.",
     "Synthetic transaction and idempotency verification were executed inside a transaction and rolled back; no synthetic customer record remains.",
-    "GitHub CI run 36266820439 completed successfully after correcting async health tests.",
+    "GitHub CI run 36267017834 completed successfully for the current Supabase secret-key contract.",
     "Public Cloudflare Worker deployment, public health proof, Tally webhook registration and real Tally-to-database E2E remain open."
   ]
 }
