@@ -1,7 +1,7 @@
 {
-  "checkpoint": "BOS-CP01-A",
+  "checkpoint": "BOS-CP01",
   "version": "0.1.0",
-  "status": "IMPLEMENTED_NOT_FROZEN",
+  "status": "IMPLEMENTED_AWAITING_PUBLIC_DEPLOYMENT",
   "claims": {
     "repository_initialized": true,
     "data_contract_committed": true,
@@ -16,8 +16,26 @@
     "rpc_service_role_execute": true,
     "tally_form_published": true,
     "gateway_webhook_implemented": true,
+    "gateway_test_suite_passed": true,
+    "github_ci_verified": true,
+    "cloudflare_deploy_workflow_prepared": true,
     "worker_public_health_verified": false,
-    "ci_verified": false
+    "tally_webhook_registered": false,
+    "real_tally_to_database_e2e_verified": false
+  },
+  "verification": {
+    "github_ci_run_id": 36266820439,
+    "github_ci_conclusion": "success",
+    "github_ci_head_sha": "2137d4baaeb77f7b9b5b60cfcbad57895ff92049",
+    "pr_number": 1,
+    "merge_commit": "e19cdc42c9cad3670a6f903aca105b6ce3ca2529",
+    "local_compatibility_test": {
+      "runtime": "Node 22.16.0",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "note": "Supplementary compatibility check only; canonical CI used repository Node 24 configuration."
+    }
   },
   "tally": {
     "form_id": "zxlAbR",
@@ -35,12 +53,29 @@
       "provider_deliveries"
     ]
   },
+  "deployment": {
+    "worker_name": "business-os-gateway",
+    "workflow": ".github/workflows/deploy-worker.yml",
+    "trigger": "workflow_dispatch",
+    "required_github_secrets": [
+      "CLOUDFLARE_API_TOKEN",
+      "CLOUDFLARE_ACCOUNT_ID",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "TALLY_WEBHOOK_SECRET"
+    ],
+    "committed_non_secret_vars": {
+      "APP_ENV": "production",
+      "SUPABASE_URL": "https://bhbhbbachvzdwahdiirj.supabase.co",
+      "TALLY_FORM_ID": "zxlAbR"
+    }
+  },
   "notes": [
     "No production or revenue claim.",
-    "RLS enabled on all six public CP01 tables.",
-    "No anon/authenticated RLS policies are intentionally defined for CP01-A.",
+    "RLS is enabled on all six public CP01 tables.",
+    "No anon/authenticated RLS policies are intentionally defined for CP01.",
     "Atomic ingest RPC is restricted to service_role.",
-    "Synthetic transaction and idempotency verification were executed inside a transaction and rolled back; no synthetic contact or idempotency row remains.",
-    "Public Cloudflare Worker deployment, public health proof, Tally webhook registration and CI verification remain open."
+    "Synthetic transaction and idempotency verification were executed inside a transaction and rolled back; no synthetic customer record remains.",
+    "GitHub CI run 36266820439 completed successfully after correcting async health tests.",
+    "Public Cloudflare Worker deployment, public health proof, Tally webhook registration and real Tally-to-database E2E remain open."
   ]
 }
