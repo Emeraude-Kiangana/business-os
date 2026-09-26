@@ -1,7 +1,7 @@
 {
   "checkpoint": "BOS-CP01",
   "version": "0.1.0",
-  "status": "IMPLEMENTED_AWAITING_PUBLIC_DEPLOYMENT",
+  "status": "PREDEPLOY_AUDITED_READY_FOR_SECRET_CONFIGURATION",
   "claims": {
     "repository_initialized": true,
     "data_contract_committed": true,
@@ -15,37 +15,61 @@
     "rpc_authenticated_execute": false,
     "rpc_service_role_execute": true,
     "tally_form_published": true,
+    "tally_privacy_notice_added": true,
+    "tally_input_constraints_hardened": true,
+    "tally_paid_retention_policy_blocked_by_cost_guard": true,
     "gateway_webhook_implemented": true,
     "gateway_test_suite_passed": true,
     "github_ci_verified": true,
-    "cloudflare_deploy_workflow_prepared": true,
-    "supabase_modern_secret_key_contract": true,
+    "github_actions_pinned_to_commit_shas": true,
+    "deploy_requires_verify_job": true,
+    "cloudflare_required_secrets_declared": true,
+    "supabase_secret_key_apikey_only": true,
+    "request_size_guard": true,
+    "supabase_timeout_guard": true,
+    "attribution_persisted_in_event_log": true,
+    "committed_secret_scan_clean": true,
     "worker_public_health_verified": false,
     "tally_webhook_registered": false,
     "real_tally_to_database_e2e_verified": false
   },
   "verification": {
-    "github_ci_run_id": 36267017834,
-    "github_ci_conclusion": "success",
-    "github_ci_head_sha": "0bacc042cea366e5477e80b0bad14df608d606b2",
-    "pr_number": 2,
-    "merge_commit": "12b28b40d7c13133987e811bf5808d857f1a2515",
-    "local_compatibility_test": {
-      "runtime": "Node 22.16.0",
-      "tests": 6,
-      "passed": 6,
-      "failed": 0,
-      "note": "Supplementary compatibility check only; canonical CI uses repository Node 24 configuration."
+    "predeploy_ci_run_id": 36268943796,
+    "predeploy_ci_conclusion": "success",
+    "predeploy_ci_head_sha": "77f71ad33fa8fd49763526c4d1318f954098543a",
+    "predeploy_pr_number": 3,
+    "predeploy_merge_commit": "a781dd68aeb9807b1d63aa5eabb5ac1a686cd30a",
+    "supabase_performance_advisors": "CLEAN",
+    "supabase_security_advisors": "INFO_ONLY_RLS_ENABLED_NO_POLICY_INTENTIONAL",
+    "database_row_counts": {
+      "contacts": 0,
+      "leads": 0,
+      "lead_events": 0,
+      "consents": 0,
+      "idempotency_keys": 0,
+      "provider_deliveries": 0
     }
   },
   "tally": {
     "form_id": "zxlAbR",
-    "status": "PUBLISHED"
+    "status": "PUBLISHED",
+    "privacy_notice": true,
+    "field_constraints": {
+      "name_max_characters": 120,
+      "problem_min_characters": 10,
+      "problem_max_characters": 4000
+    },
+    "automatic_retention_policy": {
+      "requested": "30 days",
+      "applied": false,
+      "reason": "Requires Tally Business; blocked by #0$ Cost Guard"
+    }
   },
   "supabase": {
     "project_ref": "bhbhbbachvzdwahdiirj",
     "status_observed": "ACTIVE_HEALTHY",
     "backend_key_contract": "SUPABASE_SECRET_KEY",
+    "transport": "apikey header only",
     "tables": [
       "contacts",
       "leads",
@@ -59,6 +83,8 @@
     "worker_name": "business-os-gateway",
     "workflow": ".github/workflows/deploy-worker.yml",
     "trigger": "workflow_dispatch",
+    "predeploy_verify_required": true,
+    "concurrency_group": "business-os-worker-production",
     "required_github_secrets": [
       "CLOUDFLARE_API_TOKEN",
       "CLOUDFLARE_ACCOUNT_ID",
@@ -71,13 +97,22 @@
       "TALLY_FORM_ID": "zxlAbR"
     }
   },
+  "remaining_gates": [
+    "Configure the four deployment secrets outside source control.",
+    "Deploy Cloudflare Worker through the guarded manual workflow.",
+    "Verify public GET /health returns HTTP 200.",
+    "Register signed Tally webhook.",
+    "Submit one controlled real form response.",
+    "Verify contact + lead + consent + event + idempotency persistence.",
+    "Verify replay does not duplicate the lead.",
+    "Freeze BOS-CP01 only after all above evidence passes."
+  ],
   "notes": [
     "No production or revenue claim.",
     "RLS is enabled on all six public CP01 tables.",
     "No anon/authenticated RLS policies are intentionally defined for CP01.",
-    "Atomic ingest RPC execution remains restricted to the PostgreSQL service_role; the Worker authenticates using the current Supabase secret-key model.",
-    "Synthetic transaction and idempotency verification were executed inside a transaction and rolled back; no synthetic customer record remains.",
-    "GitHub CI run 36267017834 completed successfully for the current Supabase secret-key contract.",
-    "Public Cloudflare Worker deployment, public health proof, Tally webhook registration and real Tally-to-database E2E remain open."
+    "The six Supabase RLS-no-policy advisor notices are accepted as intentional informational findings.",
+    "Synthetic transaction tests were rolled back; no synthetic customer record remains.",
+    "No committed Supabase secret, JWT, Cloudflare token, or Tally signing secret was found in the repository audit."
   ]
 }
