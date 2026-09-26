@@ -22,8 +22,8 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/gateway
           secrets: |
-            SUPABASE_SERVICE_ROLE_KEY
+            SUPABASE_SECRET_KEY
             TALLY_WEBHOOK_SECRET
         env:
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           TALLY_WEBHOOK_SECRET: ${{ secrets.TALLY_WEBHOOK_SECRET }}

@@ -1,5 +1,5 @@
 export async function ingestLead(env, lead) {
-  if (!env?.SUPABASE_URL || !env?.SUPABASE_SERVICE_ROLE_KEY) {
+  if (!env?.SUPABASE_URL || !env?.SUPABASE_SECRET_KEY) {
     throw new Error("CONFIGURATION_ERROR");
   }
 
@@ -9,8 +9,8 @@ export async function ingestLead(env, lead) {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-        authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`
+        apikey: env.SUPABASE_SECRET_KEY,
+        authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`
       },
       body: JSON.stringify({
         p_provider: lead.provider,

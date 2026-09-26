@@ -87,7 +87,7 @@ test("valid Tally webhook persists through RPC adapter boundary", async () => {
       TALLY_WEBHOOK_SECRET: secret,
       TALLY_FORM_ID: "zxlAbR",
       SUPABASE_URL: "https://example.supabase.co",
-      SUPABASE_SERVICE_ROLE_KEY: "test-only"
+      SUPABASE_SECRET_KEY: "test-only"
     });
 
     assert.equal(response.status, 200);
