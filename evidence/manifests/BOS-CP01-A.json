@@ -1,0 +1,37 @@
+{
+  "checkpoint": "BOS-CP01-A",
+  "version": "0.1.0",
+  "status": "IN_PROGRESS",
+  "claims": {
+    "repository_initialized": true,
+    "data_contract_committed": true,
+    "database_tables_present": true,
+    "database_rls_enabled": true,
+    "tally_form_published": true,
+    "worker_public_health_verified": false,
+    "ci_verified": false
+  },
+  "tally": {
+    "form_id": "zxlAbR",
+    "status": "PUBLISHED"
+  },
+  "supabase": {
+    "project_ref": "bhbhbbachvzdwahdiirj",
+    "status_observed": "ACTIVE_HEALTHY",
+    "tables": [
+      "contacts",
+      "leads",
+      "lead_events",
+      "consents",
+      "idempotency_keys",
+      "provider_deliveries"
+    ]
+  },
+  "notes": [
+    "No production or revenue claim.",
+    "RLS enabled on all six public CP01 tables.",
+    "No anon/authenticated RLS policies are intentionally defined for CP01-A.",
+    "Three foreign-key indexes were added after Supabase advisor review.",
+    "Public Worker deployment and CI verification remain open."
+  ]
+}
