@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { handleRequest } from "../src/index.js";
 
 test("GET /health returns canonical service status", async () => {
-  const response = handleRequest(
+  const response = await handleRequest(
     new Request("https://business-os.invalid/health", { method: "GET" })
   );
 
@@ -16,7 +16,7 @@ test("GET /health returns canonical service status", async () => {
 });
 
 test("unknown route fails closed", async () => {
-  const response = handleRequest(
+  const response = await handleRequest(
     new Request("https://business-os.invalid/unknown", { method: "GET" })
   );
 
